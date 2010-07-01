@@ -4,7 +4,6 @@
 
 
 Waypoint::Waypoint(WaypointType type):
-box_(NULL),
 type_(type)
 {
 }
@@ -24,11 +23,11 @@ void Waypoint::SetBox(Box* box)
 		outColor = sf::Color::Black;
 	}
 
-	box_ = box;
 	int x, y;
 	float width, height;
 
 	box->GetCoordinates(x, y, width, height);
+	pos_ = sf::Vector2f(x + width / 2.0f, y + width / 2.0f);
 	
 	float widthPercent = width * 10 / 100;
 	float heightPercent = height * 10 / 100;
@@ -50,11 +49,16 @@ void Waypoint::SetBox(Box* box)
 								outColor);
 }
 
+sf::Vector2f Waypoint::GetPosition()
+{
+	return pos_;
+}
+
 void Waypoint::Render(sf::RenderTarget& rt) const
 {
-	if(box_ != NULL)
-	{
+	//if(box_ != NULL)
+	//{
 		rt.Draw(cross1_);
 		rt.Draw(cross2_);
-	}
+	//}
 }

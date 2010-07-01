@@ -29,6 +29,7 @@ void DrawableRegister::AddTemp(WaypointManager& waypointMgr)
 {
 	AddTemp(waypointMgr.GetStartPoint());
 	AddTemp(waypointMgr.GetEndPoint());
+	AddTemp(waypointMgr.GetArrow());
 }
 
 void DrawableRegister::RemoveStatic(sf::Drawable& obj)

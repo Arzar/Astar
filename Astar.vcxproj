@@ -93,6 +93,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Arrow.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="DrawableRegister.cpp" />
     <ClCompile Include="Grid.cpp" />
@@ -102,11 +103,13 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="PathManipuler.cpp" />
     <ClCompile Include="PrettyPrint.cpp" />
+    <ClCompile Include="SFMLMath.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Waypoint.cpp" />
     <ClCompile Include="WaypointManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Arrow.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="DrawableRegister.h" />
     <ClInclude Include="Grid.h" />
@@ -115,6 +118,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="PathManipuler.h" />
     <ClInclude Include="PrettyPrint.h" />
+    <ClInclude Include="SFMLMath.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Waypoint.h" />
