@@ -1,0 +1,5 @@
+dirt_mat D 1 dirt
+grass_mat G 0.9 grass
+sand_mat S 0.3 sand
+water_mat W 0.1 water
+wall_mat X 0.0 wall
