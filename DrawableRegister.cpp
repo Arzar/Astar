@@ -3,6 +3,7 @@
 #include "DrawableRegister.h"
 #include "Grid.h"
 #include "WaypointManager.h"
+#include "Arrow.h"
 
 void DrawableRegister::AddStatic(sf::Drawable& obj)
 {
@@ -14,13 +15,21 @@ void DrawableRegister::AddTemp(sf::Drawable& obj)
 	tempObj.push_back(&obj);
 }
 
+void DrawableRegister::AddTemp(std::vector<Arrow>& drawables)
+{
+	BOOST_FOREACH(sf::Drawable& d, drawables)
+	{
+		tempObj.push_back(&d);
+	}
+}
+
 void DrawableRegister::AddStatic(Grid& grid)
 {
-	for(int j = 0 ; j < grid.GetNbCol() ; j++)
+	for(int y = 0 ; y < grid.GetNbRow() ; y++)
 	{
-		for(int i = 0 ; i < grid.GetNbRow() ; i++)
+		for(int x = 0 ; x < grid.GetNbCol() ; x++)
 		{
-			AddStatic( grid.GetBoxByNumber(i, j) );
+			AddStatic( grid.GetBoxByRank(x, y) );
 		}
 	}
 }
@@ -29,7 +38,7 @@ void DrawableRegister::AddTemp(WaypointManager& waypointMgr)
 {
 	AddTemp(waypointMgr.GetStartPoint());
 	AddTemp(waypointMgr.GetEndPoint());
-	AddTemp(waypointMgr.GetArrow());
+	AddTemp(waypointMgr.GetArrows());
 }
 
 void DrawableRegister::RemoveStatic(sf::Drawable& obj)
@@ -54,6 +63,11 @@ void DrawableRegister::RemoveTemp(sf::Drawable& obj)
 		std::swap(*it, tempObj.back());
 		tempObj.resize(tempObj.size() - 1);
 	}
+}
+
+void DrawableRegister::ClearTemp()
+{
+	tempObj.clear();
 }
 
 void DrawableRegister::DrawStatic(sf::RenderTarget& App)

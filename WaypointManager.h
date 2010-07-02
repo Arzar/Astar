@@ -2,15 +2,17 @@
 
 #include "Waypoint.h"
 #include "Arrow.h"
+#include "GraphSolver.h"
 
 class Grid;
 
 class WaypointManager
 {
 	Grid* grid_;
+	GraphSolver solver_;
 	Waypoint startPoint_;
 	Waypoint endPoint_;
-	Arrow arrow_;
+	std::vector<Arrow> arrows_;
 
 	WaypointManager();
 	WaypointManager(const WaypointManager&);
@@ -18,10 +20,12 @@ class WaypointManager
 public:
 
 	WaypointManager(Grid* grid);
-	Arrow& GetArrow();
+	std::vector<Arrow>& GetArrows();
 	Waypoint& GetStartPoint();
 	Waypoint& GetEndPoint();
 	void AddStartPoint(float x, float y);
 	void AddEndPoint(float x, float y);
+
+	void WaypointManager::FindPath();
 
 };

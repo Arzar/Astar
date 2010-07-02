@@ -13,36 +13,21 @@ private:
 	float height_;
 	int x_;
 	int y_;
-
+	int number_;
+	Box();
 public:
-	void InitDisplay(int posX, int posY, int width, int height);
-
+	Box(int number, int posX, int posY, int width, int height);
+	virtual ~Box(){}
+	
 	void BindMaterial(const Material& material);
+	const Material& GetMaterial() const ;
+	Material& GetMaterial();
+	virtual void Render(sf::RenderTarget& rt) const ;
+	void GetCoordinates(int& x, int& y, float& width, float& height);
+	virtual sf::Vector2f GetCenter() const;
+	float GetSpeedFactor();
+	int GetNumber();
 
-	
-	const Material& GetMaterial() const
-	{
-		return _material;
-	}
-	
-	Material& GetMaterial()
-	{
-		return _material;
-	}
-
-	virtual void Render(sf::RenderTarget& rt) const
-	{
-		rt.Draw(_sprite);
-	}
-
-	void GetCoordinates(int& x, int& y, float& width, float& height)
-	{
-		x = x_;
-		y = y_;
-		width = width_;
-		height = height_;
-	}
-	//
 	
 };
 

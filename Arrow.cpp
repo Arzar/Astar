@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "Arrow.h"
-#include "SFMLMath.h"
 
 Arrow::Arrow()
 {

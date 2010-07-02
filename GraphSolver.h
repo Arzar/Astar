@@ -3,55 +3,57 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graph_traits.hpp>
 
+
 #include "Grid.h"
-class GraphSolver
+
+
+struct Node
 {
-	// create a typedef for the Graph type
-	typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS> Graph;
+	sf::Vector2f pos;
+};
 
-	typedef boost::graph_traits<Graph> GraphTraits;
-	typedef GraphTraits::vertex_descriptor Vertex;
-	typedef GraphTraits::edge_descriptor Edge;
-	typedef GraphTraits::vertex_iterator Vertex_Iter;
-	typedef GraphTraits::edge_iterator Edge_Iter;
-
-    typedef std::pair<int,int> E;
-	typedef boost::property_map<Graph, boost::vertex_index_t>::type Vertex_Index;
-
-
-	Graph graph_;
-public:
-	Graph(Grid& grid)
+// Une liaison entre deux waypoints
+struct NodeConnection
+{
+	NodeConnection():dist(0.0f), weight(0.0f)
 	{
+
 	}
 
-    // Make convenient labels for the vertices
-    enum { A, B, C, D, E, N };
-    const int num_vertices = N;
-    const char* name = "ABCDE";
+	float dist;
+	float weight;
+    // idem
+};
 
-    // writing out the edges in the graph
-    typedef std::pair<int, int> Edge;
-    Edge edge_array[] = 
-    { Edge(A,B), Edge(A,D), Edge(C,A), Edge(D,C),
-      Edge(C,E), Edge(B,D), Edge(D,E) };
-    const int num_edges = sizeof(edge_array)/sizeof(edge_array[0]);
 
-	typedef boost::graph_traits<Graph> GraphTraits;
-	typedef GraphTraits::vertex_descriptor Vertex;
-	typedef GraphTraits::edge_descriptor Edge;
-	typedef boost::graph_traits<Graph>::vertex_iterator Vertex_Iter;
-    typedef std::pair<int,int> E;
-	typedef boost::property_map<Graph, boost::vertex_index_t>::type Vertex_Index;
+// create a typedef for the Graph type
+typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, Node, NodeConnection> Graph;
 
-    const int num_nodes = 5;
-    E edges[] = { E(0,2), 
-                  E(1,1), E(1,3), E(1,4),
-                  E(2,1), E(2,3), 
-                  E(3,4),
-                  E(4,0), E(4,1) };
-    int weights[] = { 1, 2, 1, 2, 7, 3, 1, 1, 1};
+typedef boost::graph_traits<Graph> GraphTraits;
+typedef GraphTraits::vertex_descriptor Vertex;
+typedef GraphTraits::edge_descriptor Edge;
+typedef GraphTraits::vertex_iterator Vertex_Iter;
+typedef GraphTraits::edge_iterator Edge_Iter;
 
-    Graph G(edges, edges + sizeof(edges) / sizeof(E), weights, num_nodes);
+typedef boost::property_map<Graph, boost::vertex_index_t>::type Vertex_Index;
 
+class GraphSolver
+{
+private:
+	
+	Graph graph_;
+	void AddEdges(Grid& grid);
+		
+	void AddEge(int xVert1, int yVert1, int xVert2, int yVert2, Grid& grid);
+	void AddEdgesFourCorner(Grid& grid);
+	void AddEdgesFrameLine(Grid& grid);
+	void AddEdgesCenter(Grid& grid);
+
+	void PrintGraph(Grid& grid);
+
+public:
+	GraphSolver(Grid& grid);
+	   	
+	std::vector<Vertex> AstarSolve(int start, int goal);
+	std::vector<Vertex> DijkstraSolve(int start, int goal);
 };

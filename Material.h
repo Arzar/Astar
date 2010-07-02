@@ -23,6 +23,11 @@ public:
 	{
 	}
 
+	float GetSpeedFactor()
+	{
+		return speed_factor;
+	}
+
 	char GetShortName() const
 	{
 		return short_name;

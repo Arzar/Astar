@@ -12,47 +12,33 @@ class Grid
 	Grid();
 	
 public:
-	Grid(int nbRow, int nbCol) : 
-	nbRow_(nbRow), 
-	nbCol_(nbCol), 
-	box_(nbRow * nbCol), 
-	width_(0.0), 
-	height_(0.0)
-	{
-	}
+	
+	Grid(int nbRow, int nbCol, int widthScreen, int heightScreen);
 
 	Box& GetBoxByLocation(float x, float y)
 	{
 		float widthBox = width_ / nbCol_;
 		float heightBox = height_ / nbRow_;
 
-		int c = static_cast<int>(x / widthBox);
-		int l = static_cast<int>(y / heightBox);
-		return GetBoxByNumber(l, c);
+		int x2 = static_cast<int>(x / widthBox);
+		int y2 = static_cast<int>(y / heightBox);
+		return GetBoxByRank(x2, y2);
 	}
 
-	Box& GetBoxByNumber(int l, int c)
+	Box& GetBoxByRank(int x, int y)
 	{
-		return box_[c * nbCol_ + l];
+		return box_[y * nbCol_ + x];
 	}
 
+	Box& GetBoxByNumber(int nb)
+	{
+		return box_[nb];
+	}
+	
 	const Box& GetBoxByNumber(int l, int c) const
 	{
 		return box_[c * nbCol_ + l];
 	}
-
-
-	/*
-	Box& operator()(int i, int j)
-	{
-	
-	}
-
-	const Box& operator()(int i, int j) const
-	{
-		return box[j * nbCol + i];
-	}
-	*/
 
 	int GetNbRow() const
 	{
@@ -65,4 +51,6 @@ public:
 	}
 
 	void InitDisplay(int width, int height);
+
+	int Lin(int l, int c);
 };

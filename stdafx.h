@@ -26,5 +26,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include "SFMLMath.h"
 
 namespace fs = boost::filesystem;

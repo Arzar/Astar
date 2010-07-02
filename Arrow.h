@@ -15,4 +15,5 @@ public:
 	Arrow(sf::Vector2f start, sf::Vector2f end);
 
 	virtual void Render(sf::RenderTarget& rt) const ;
+	virtual ~Arrow(){}
 };

@@ -65,7 +65,7 @@ MaterialManager Loader::LoadMaterials(const ImageManager& imgMgr, const fs::path
 	return matMgr;
 }
 
-Grid Loader::LoadGrid(const MaterialManager& matMgr, const fs::path& grid_file_name) const
+Grid Loader::LoadGrid(const MaterialManager& matMgr, const fs::path& grid_file_name, int widthscreen, int heightScreen) const
 {
 	fs::path grid_path = pathManipuler.FindDirectory("grid");
 	fs::path grid_file = grid_path / grid_file_name;
@@ -76,27 +76,27 @@ Grid Loader::LoadGrid(const MaterialManager& matMgr, const fs::path& grid_file_n
 		std::string s;
 		std::getline(file, s);
 
-		int width, height = 0;
+		int nbCol, nbRow = 0;
 		std::stringstream ss;
 	    ss << s;
-		if(ss >> width >> height)
+		if(ss >> nbCol >> nbRow)
 		{
-			Grid grid(width, height);
+			Grid grid(nbCol, nbRow, widthscreen, heightScreen);
 
-			int nbLigne = 0;
-			while(std::getline(file, s) && (nbLigne < height))
+			int y = 0;
+			while(std::getline(file, s) && (y < nbRow))
 			{
 
 				std::stringstream ss;
 				ss << s;
-				for(int nbCol = 0 ; nbCol < width ; nbCol++)
+				for(int x = 0 ; x < nbCol ; x++)
 				{
 					char mat;
 					ss >> mat;
-					Box& box = grid.GetBoxByNumber(nbLigne, nbCol);
+					Box& box = grid.GetBoxByRank(x, y);
 					box.BindMaterial(matMgr.GetByShortName(mat));
 				}
-				nbLigne++;
+				y++;
 			}
 			return grid;
 		}
@@ -122,6 +122,6 @@ Grid Loader::LoadGrid(const MaterialManager& matMgr, const fs::path& grid_file_n
 		}
 		*/
 	}
-	return Grid(0, 0);
+	return Grid(0, 0, 0, 0);
 
 }

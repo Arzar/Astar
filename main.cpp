@@ -14,15 +14,14 @@ int main(int argc, char** argv)
 	Loader loader;
 	ImageManager imMgr = loader.LoadImages();
 	MaterialManager matMgr = loader.LoadMaterials(imMgr, "material.txt");
-	Grid grid = loader.LoadGrid(matMgr, "grid.txt");
-	WaypointManager waypointMgr(&grid);
-	
+		
 	sf::RenderWindow App(sf::VideoMode(800, 600, 32), "SFML Window");
+
+	Grid grid = loader.LoadGrid(matMgr, "grid.txt", App.GetWidth(), App.GetHeight());
+	WaypointManager waypointMgr(&grid);
 
 	DrawableRegister reg;
 	reg.AddStatic(grid);
-
-	grid.InitDisplay(App.GetWidth(), App.GetHeight());
 	
 	while (App.IsOpened())
 	{
@@ -45,13 +44,22 @@ int main(int argc, char** argv)
 
 				if(Event.MouseButton.Button == sf::Mouse::Left)
 				{
+					reg.ClearTemp();
 					waypointMgr.AddStartPoint(x, y);
 					reg.AddTemp(waypointMgr);
 				}
 
 				if(Event.MouseButton.Button == sf::Mouse::Right)
 				{
+					reg.ClearTemp();
 					waypointMgr.AddEndPoint(x, y);
+					reg.AddTemp(waypointMgr);
+				}
+
+				if(Event.MouseButton.Button == sf::Mouse::Middle)
+				{
+					reg.ClearTemp();
+					waypointMgr.FindPath();
 					reg.AddTemp(waypointMgr);
 				}
 			}
@@ -77,9 +85,10 @@ int main(int argc, char** argv)
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
+*/
 
 
-
+/*
 template <class Graph> 
 struct exercise_out_edge
 {
@@ -170,6 +179,13 @@ struct exercise_adjacency_vertex
     }
     Graph& g;
 };
+*//*
+
+struct MyEdge
+{
+	float weight;
+	unsigned int dist;
+};
 
 
 template <class Edge>
@@ -253,21 +269,24 @@ make_predecessor_recorder(std::vector<Edge>& a)
    std::for_each(vertices(g).first, vertices(g).second, exercise_adjacency_vertex<Graph>(g));
    return 0;
    */
-/*
+	/*
 	typedef boost::adjacency_list<
 		boost::listS, 
 		boost::vecS, 
 		boost::undirectedS, 
 		boost::no_property, 
-		boost::property<boost::edge_weight_t, int> 
+		//boost::property<boost::edge_weight_t, int>
+		MyEdge
 	> Graph;
 
 	typedef boost::graph_traits<Graph> GraphTraits;
 	typedef GraphTraits::vertex_descriptor Vertex;
 	typedef GraphTraits::edge_descriptor Edge;
 	typedef boost::graph_traits<Graph>::vertex_iterator Vertex_Iter;
+	typedef boost::graph_traits<Graph>::edge_iterator Edge_Iter;
     typedef std::pair<int,int> E;
 	typedef boost::property_map<Graph, boost::vertex_index_t>::type Vertex_Index;
+	typedef boost::property_map<Graph, boost::edge_index_t>::type Edge_Index;
 
     const int num_nodes = 5;
     E edges[] = { E(0,2), 
@@ -277,7 +296,22 @@ make_predecessor_recorder(std::vector<Edge>& a)
                   E(4,0), E(4,1) };
     int weights[] = { 1, 2, 1, 2, 7, 3, 1, 1, 1};
 
-    Graph G(edges, edges + sizeof(edges) / sizeof(E), weights, num_nodes);
+	
+    Graph G;
+	//Graph G(edges, edges + sizeof(edges) / sizeof(E), weights, num_nodes);
+
+	
+	int num_edges = sizeof(edges) / sizeof(E);
+	for(int i = 0 ; i < num_edges ; i++)
+	{
+		Edge edge;
+		bool b;
+		boost::tie(edge, b) = boost::add_edge(edges[i].first, edges[i].second, G);
+		G[edge].weight = weights[i];
+		
+	}
+	
+	
 
 	Vertex_Index index = boost::get(boost::vertex_index, G);
 
@@ -294,7 +328,11 @@ make_predecessor_recorder(std::vector<Edge>& a)
 
 	// invoke variant 2 of Dijkstra's algorithm
 	boost::dijkstra_shortest_paths(G, *vi, 
-		boost::predecessor_map(&p[0]).distance_map(&d[0]).visitor(make_predecessor_recorder(a)));
+		boost::predecessor_map(&p[0]).
+		weight_map(boost::get(&MyEdge::weight, G)).
+		//distance_map(boost::get(&MyEdge::dist, G)).
+		distance_map(&d[0]).
+		visitor(make_predecessor_recorder(a)));
 	
 	std::cout << "parents in the tree of shortest paths:" << std::endl;
 	GraphTraits::vertex_iterator vi2, vi2_end;
@@ -307,9 +345,9 @@ make_predecessor_recorder(std::vector<Edge>& a)
 			std::cout << ") = " << p[*vi2] << std::endl;
 	}
 	std::cout << std::endl;
-	*/
-//}
-
+	
+}
+*/
 
 
  

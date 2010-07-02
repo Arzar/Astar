@@ -96,6 +96,7 @@
     <ClCompile Include="Arrow.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="DrawableRegister.cpp" />
+    <ClCompile Include="GraphSolver.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="Loader.cpp" />
@@ -112,6 +113,7 @@
     <ClInclude Include="Arrow.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="DrawableRegister.h" />
+    <ClInclude Include="GraphSolver.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="ImageManager.h" />
     <ClInclude Include="Loader.h" />

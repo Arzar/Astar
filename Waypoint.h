@@ -26,6 +26,7 @@ class Waypoint : public sf::Drawable
 public:
 
 	Waypoint(WaypointType type);
+	virtual ~Waypoint(){}
 
 	void SetBox(Box* box);
 	virtual sf::Vector2f GetPosition();

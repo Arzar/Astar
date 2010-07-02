@@ -2,6 +2,7 @@
 
 class Grid;
 class WaypointManager;
+class Arrow;
 
 class DrawableRegister
 {
@@ -14,6 +15,8 @@ public:
 	void AddStatic(sf::Drawable& obj);
 	void AddTemp(sf::Drawable& obj);
 
+	void AddTemp(std::vector<Arrow>& drawables);
+
 	void AddStatic(WaypointManager& waypointMgr);
 	void AddTemp(WaypointManager& waypointMgr);
 	
@@ -25,4 +28,6 @@ public:
 
 	void DrawStatic(sf::RenderTarget& App);
 	void DrawTemp(sf::RenderTarget& App);
+
+	void DrawableRegister::ClearTemp();
 };
