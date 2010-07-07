@@ -61,6 +61,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4482</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>sfml-window-s-d.lib;sfml-system-s-d.lib;sfml-graphics-s-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -102,6 +103,7 @@
     <ClCompile Include="Loader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Path.cpp" />
     <ClCompile Include="PathManipuler.cpp" />
     <ClCompile Include="PrettyPrint.cpp" />
     <ClCompile Include="SFMLMath.cpp" />
@@ -118,6 +120,7 @@
     <ClInclude Include="ImageManager.h" />
     <ClInclude Include="Loader.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="Path.h" />
     <ClInclude Include="PathManipuler.h" />
     <ClInclude Include="PrettyPrint.h" />
     <ClInclude Include="SFMLMath.h" />

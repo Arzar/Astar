@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 		
 	sf::RenderWindow App(sf::VideoMode(800, 600, 32), "SFML Window");
 
-	Grid grid = loader.LoadGrid(matMgr, "grid.txt", App.GetWidth(), App.GetHeight());
+	Grid grid = loader.LoadGrid(matMgr, "grid2.txt", App.GetWidth(), App.GetHeight());
 	WaypointManager waypointMgr(&grid);
 
 	DrawableRegister reg;

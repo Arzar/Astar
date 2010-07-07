@@ -4,14 +4,19 @@
 #include <boost/graph/astar_search.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 
+#include "Path.h"
+
 GraphSolver::GraphSolver(Grid& grid)
 {
-	int num_nodes = grid.GetNbCol() * grid.GetNbRow();
+   positions_ = get(vertex_position_t(), graph_);
+   distances_ = get(boost::edge_weight, graph_);
+
+   int num_nodes = grid.GetNbCol() * grid.GetNbRow();
 
 	for (int i = 0 ; i < num_nodes; i++)
 	{
 		Vertex v = boost::add_vertex(graph_);
-		graph_[v].pos = grid.GetBoxByNumber(i).GetCenter();
+		boost::put(positions_, v, grid.GetBoxByNumber(i).GetCenter());
 	}
 	
 	AddEdges(grid);
@@ -27,10 +32,11 @@ void GraphSolver::AddEge(int xVert1, int yVert1, int xVert2, int yVert2, Grid& g
 	{
 		assert(0);
 	}
-	graph_[e].dist = 1;
-	float weight = ( grid.GetBoxByRank(xVert1, yVert1).GetSpeedFactor() + 
-		             grid.GetBoxByRank(xVert2, yVert2).GetSpeedFactor() ) / 2.0f;
-	graph_[e].weight = weight; 
+	
+	float weight = grid.GetBoxByRank(xVert2, yVert2).GetSpeedFactor();
+	float dist = sf::distance(sf::Vector2f((float)xVert1, (float)yVert1), sf::Vector2f((float)xVert2, (float)yVert2));
+	
+	distances_[e] = weight * dist; 
 
 }
 
@@ -123,7 +129,6 @@ void GraphSolver::AddEdgesCenter(Grid& grid)
 
 void GraphSolver::PrintGraph(Grid& grid)
 {
-	//Vertex_Iter vi = *(vertices(G).first);
 	Edge_Iter ei = edges(graph_).first;
 	Edge_Iter eie = edges(graph_).second;
 
@@ -165,40 +170,49 @@ struct found_goal {};
 // Le but est spécifié via le constructeur.
 class astar_goal_visitor : public boost::default_astar_visitor{
 public:
-    astar_goal_visitor(Vertex goal) : m_goal(goal) {}
+    astar_goal_visitor(Vertex goal, std::vector<Edge>& allPath) : goal_(goal), allPath_(allPath) {}
  
-    void examine_vertex(Vertex v, const Graph& g){ // Le const est important.
-        if(v == m_goal)
+    void examine_vertex(Vertex v, const Graph& g)  // Le const est important.
+	{
+        if(v == goal_)
             throw found_goal(); // On sort en lancant une exception. C'est moche mais c'est comme ça.
         }
+
+	void edge_relaxed(Edge e, const Graph& g)
+	{
+		allPath_.push_back(e);
+	}
+
 private:
-    Vertex m_goal;
+    Vertex goal_;
+	std::vector<Edge>& allPath_;
 };
 
 class distance_heuristic : public boost::astar_heuristic <Graph, float>{
 public:
-    distance_heuristic(const Graph& l, Vertex goal)
-    : m_graph(l), m_goal(goal) {}
+    distance_heuristic(const Graph& g, const VertexPositionMap& positions,  Vertex goal)
+    : m_graph(g), m_pos(positions), m_goal(goal) {}
  
-    float operator()(Vertex u)
+    float operator()(Vertex v)
     {
-        const Node& U = m_graph[u];
-        const Node& V = m_graph[m_goal];
-
-		return sf::distance(U.pos, V.pos);
+		sf::Vector2f v_pos = boost::get(m_pos, v);
+		sf::Vector2f goal_pos = boost::get(m_pos, m_goal);
+		
+		return sf::distance(v_pos, goal_pos);
     }
 private:
     const Graph& m_graph;
+	const VertexPositionMap& m_pos;
     Vertex m_goal;
 };
 
 
-std::vector<Vertex> GraphSolver::AstarSolve(int start, int goal)
+Path GraphSolver::AstarSolve(int start, int goal)
 {
    std::vector<Vertex> p(boost::num_vertices(graph_)); // predecessor
-  std:: vector<float>  d(boost::num_vertices(graph_)); // distance
 
    std::vector<Vertex> shortest_path;
+   std::vector<Edge> all_path;
  
 	try 
 	{ 
@@ -206,10 +220,9 @@ std::vector<Vertex> GraphSolver::AstarSolve(int start, int goal)
 		(
 			graph_, 
 			start,  
-			distance_heuristic(graph_, goal), // default heuristic
+			distance_heuristic(graph_, positions_,  goal), // default heuristic
 			boost::predecessor_map(&p[0]).
-			distance_map(&d[0]).visitor(astar_goal_visitor(goal)).
-			weight_map(boost::get(&NodeConnection::weight, graph_)) 
+			visitor(astar_goal_visitor(goal, all_path))
 
 			
 		);
@@ -225,20 +238,25 @@ std::vector<Vertex> GraphSolver::AstarSolve(int start, int goal)
 		}
 	}
 	std::reverse(shortest_path.begin(), shortest_path.end());
-	return shortest_path;
+
+	Path path;
+	path.SetShortestPath_Vertex(shortest_path);
+	path.SetAllPath_Edge(all_path);
+
+	return path;
 }
 
 
 template <class Edge>
-class record_predecessors : public boost::dijkstra_visitor<>
+class record_all_path : public boost::dijkstra_visitor<>
 {
   public:
-	  record_predecessors(std::vector<Edge>& a)
+	  record_all_path(std::vector<Edge>& a)
       : m_a(a) { }
 
     template <class Graph>
-    void edge_relaxed(Edge e, Graph& g) {
-      // set the parent of the target(e) to source(e)
+    void edge_relaxed(Edge e, Graph& g) 
+	{
       m_a.push_back(e);
     }
   protected:
@@ -246,27 +264,24 @@ class record_predecessors : public boost::dijkstra_visitor<>
 };
 
 template <class Edge>
-record_predecessors<Edge>
-make_predecessor_recorder(std::vector<Edge>& a) 
+record_all_path<Edge>
+make_all_path_recorder(std::vector<Edge>& a) 
 {
-    return record_predecessors<Edge>(a);
+    return record_all_path<Edge>(a);
 }
 
 
-std::vector<Vertex> GraphSolver::DijkstraSolve(int start, int goal)
+Path GraphSolver::DijkstraSolve(int start, int goal)
 {
    std::vector<Vertex> shortest_path;
 
-   std::vector<int> d(num_vertices(graph_));
 
-	std::vector<Vertex> p(num_vertices(graph_), GraphTraits::null_vertex()); //the predecessor array
-	std::vector<Edge> a; //the predecessor array
+   std::vector<Vertex> p(num_vertices(graph_), GraphTraits::null_vertex()); //the predecessor array
+   std::vector<Edge> all_path; //the predecessor array
 	
 	boost::dijkstra_shortest_paths(graph_, start,
 		boost::predecessor_map(&p[0]).
-		weight_map(boost::get(&NodeConnection::weight, graph_)).
-		distance_map(&d[0]).
-		visitor(make_predecessor_recorder(a)));
+		visitor(make_all_path_recorder(all_path)));
 
 
 	for(Vertex v = goal;; v = p[v]) 
@@ -277,21 +292,11 @@ std::vector<Vertex> GraphSolver::DijkstraSolve(int start, int goal)
 	}
 
 	std::reverse(shortest_path.begin(), shortest_path.end());
+
+	Path path;
+	path.SetShortestPath_Vertex(shortest_path);
+	path.SetAllPath_Edge(all_path);
  
-	/*
-	catch(found_goal fg) 
-	{ 
-    
-		std::vector<Vertex> shortest_path;
-		for(Vertex v = goal;; v = p[v]) 
-		{
-	        shortest_path.push_back(v);
-		    if(p[v] == v)
-			    break;
-		}
-	}
-	std::reverse(shortest_path.begin(), shortest_path.end());
-	*/
-	return shortest_path;
+	return path;
 }
 

@@ -2,6 +2,7 @@
 
 #include "WaypointManager.h"
 #include "Grid.h"
+#include "Path.h"
 
 WaypointManager::WaypointManager(Grid* grid):
 grid_(grid),
@@ -48,14 +49,30 @@ void WaypointManager::FindPath()
 	int startIndex = grid_->GetBoxByLocation(startCoord.x, startCoord.y).GetNumber();
 	int endIndex = grid_->GetBoxByLocation(endCoord.x, endCoord.y).GetNumber();
 	
-	//std::vector<Vertex> vertex = solver_.DijkstraSolve(startIndex, endIndex);
-	std::vector<Vertex> vertex = solver_.AstarSolve(startIndex, endIndex);
-
+	//Path path = solver_.DijkstraSolve(startIndex, endIndex);
+	Path path = solver_.AstarSolve(startIndex, endIndex);
 	arrows_.clear();
-	for(int i1 = 0, i2 = 1 ; i2 < vertex.size() ; i1++, i2++)
+
+	
+	BOOST_FOREACH(Path::Edge edge, path.GetAllPath())
+	{
+		sf::Vector2f startArrow = grid_->GetBoxByNumber(edge.first).GetCenter();
+		sf::Vector2f endArrow = grid_->GetBoxByNumber(edge.second).GetCenter();
+		arrows_.push_back(Arrow(startArrow, endArrow, sf::Color::Red));
+	}
+
+	BOOST_FOREACH(Path::Edge edge, path.GetShortestPath())
+	{
+		sf::Vector2f startArrow = grid_->GetBoxByNumber(edge.first).GetCenter();
+		sf::Vector2f endArrow = grid_->GetBoxByNumber(edge.second).GetCenter();
+		arrows_.push_back(Arrow(startArrow, endArrow, sf::Color::Black));
+	}
+	
+	/*
+	for(unsigned int i1 = 0, i2 = 1 ; i2 < vertex.size() ; i1++, i2++)
 	{
 		sf::Vector2f startArrow = grid_->GetBoxByNumber(vertex[i1]).GetCenter();
 		sf::Vector2f endArrow = grid_->GetBoxByNumber(vertex[i2]).GetCenter();
 		arrows_.push_back(Arrow(startArrow, endArrow));
-	}
+	}*/
 }

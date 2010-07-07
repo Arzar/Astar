@@ -10,9 +10,12 @@ class Arrow : public sf::Drawable
 	sf::Shape leftTip_;
 	sf::Shape rightTip_;
 
-public:
+	sf::Color color_;
+
 	Arrow();
-	Arrow(sf::Vector2f start, sf::Vector2f end);
+public:
+	
+	Arrow(sf::Vector2f start, sf::Vector2f end, const sf::Color color);
 
 	virtual void Render(sf::RenderTarget& rt) const ;
 	virtual ~Arrow(){}

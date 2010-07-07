@@ -23,6 +23,7 @@
 #include <boost\filesystem\operations.hpp>
 
 #include <boost/foreach.hpp>
+#include <boost/range.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>

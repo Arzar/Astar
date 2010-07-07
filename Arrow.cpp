@@ -2,15 +2,10 @@
 
 #include "Arrow.h"
 
-Arrow::Arrow()
+Arrow::Arrow(sf::Vector2f start, sf::Vector2f end, sf::Color color):color_(color)
 {
-}
-
-Arrow::Arrow(sf::Vector2f start, sf::Vector2f end)
-{
-	float thickness = 2.0;
-	float outThickness = 2.0;
-	sf::Color color = sf::Color::Black;
+	float thickness = 1.0;
+	float outThickness = 1.0;
 	
 	body_ = sf::Shape::Line(start, end, thickness, color, outThickness, color);
 
@@ -36,8 +31,8 @@ Arrow::Arrow(sf::Vector2f start, sf::Vector2f end)
 	float xRightTip = xArrowRefRight * cos(angleRot) - yArrowRefRight * sin(angleRot) + start.x;
 	float yRightTip =  xArrowRefRight * sin(angleRot) + yArrowRefRight * cos(angleRot) + start.y;
 
-	leftTip_ = sf::Shape::Line(end, sf::Vector2f(xLeftTip, yLeftTip), thickness, color, outThickness, color);
-	rightTip_ = sf::Shape::Line(end, sf::Vector2f(xRightTip, yRightTip), thickness, color, outThickness, color);
+	leftTip_ = sf::Shape::Line(end, sf::Vector2f(xLeftTip, yLeftTip), thickness, color_, outThickness, color_);
+	rightTip_ = sf::Shape::Line(end, sf::Vector2f(xRightTip, yRightTip), thickness, color_, outThickness, color_);
 }
 
 void Arrow::Render(sf::RenderTarget& rt) const
